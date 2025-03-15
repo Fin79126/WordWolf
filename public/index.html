@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二つのボタン</title>
+</head>
+
+<body>
+    <button type="button" onclick="showForm(false)">参加者として参加</button>
+    <button type="button" onclick="showForm(true)">ホストとして参加</button>
+
+    <div id="formContainer" style="display:none;">
+        <form id="userForm">
+            <label for="name">名前:</label>
+            <input type="text" id="name" name="name" required>
+            <br>
+            <label for="id">部屋のID:</label>
+            <input type="text" id="roomId" name="roomId" required>
+            <br>
+            <button type="button" id="submitButton" onclick="submitForm()">決定</button>
+        </form>
+    </div>
+
+    <script>
+        function showForm(isHost) {
+            document.getElementById('formContainer').style.display = 'block';
+            const submitButton = document.getElementById('submitButton');
+            if (isHost) {
+                submitButton.innerText = 'ホストとして決定';
+                submitButton.setAttribute('onclick', 'submitForm(true)');
+            } else {
+                submitButton.innerText = '参加者として決定';
+                submitButton.setAttribute('onclick', 'submitForm(false)');
+            }
+        }
+
+        function submitForm(isHost) {
+            const name = document.getElementById('name').value;
+            const roomId = document.getElementById('roomId').value;
+            // let userId = localStorage.getItem('userId');
+            // if (!userId) {
+            //     userId = Math.random().toString(36).substr(2, 9);
+            //     localStorage.setItem('userId', userId);
+            // }
+            window.location.href = `/room/join?roomId=${roomId}&name=${name}&isHost=${isHost}`;
+        }
+    </script>
+</body>
+
+</html>

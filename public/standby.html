@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io('/room'); // Ensure this connects to the correct server URL
+            const roomId = new URLSearchParams(window.location.search).get('id');
+            socket.emit('joinRoom', roomId);
+
+            socket.on('updateParticipants', (participants) => {
+                // Update the HTML with the new participants list
+                const participantsList = document.getElementById('participants-list');
+                participantsList.innerHTML = '';
+                participants.forEach(participant => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${participant.name} (${participant.role})`;
+                    participantsList.appendChild(listItem);
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1 id="roomId">Room ID: </h1>
+    <p id="userName">Name: </p>
+    <p id="userRole">Role: </p>
+    <ul id="participants-list">
+        <!-- Participants will be listed here -->
+    </ul>
+</body>
+
+</html>
