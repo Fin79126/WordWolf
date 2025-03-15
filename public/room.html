@@ -7,8 +7,9 @@
     <title>Room</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        let socket;
         document.addEventListener('DOMContentLoaded', () => {
-            const socket = io('/room'); // Ensure this connects to the correct server URL
+            socket = io('/room'); // Ensure this connects to the correct server URL
             const roomId = new URLSearchParams(window.location.search).get('id');
             socket.emit('joinRoom', roomId);
 
@@ -21,8 +22,14 @@
                     listItem.textContent = `${participant.name} (${participant.role})`;
                     participantsList.appendChild(listItem);
                 });
+                console.log('Rooms:', socket.rooms);
+            });
+
+            socket.on('redirectToGame', (url) => {
+                window.location.href = url;
             });
         });
+
     </script>
 </head>
 

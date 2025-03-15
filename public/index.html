@@ -39,12 +39,27 @@
         function submitForm(isHost) {
             const name = document.getElementById('name').value;
             const roomId = document.getElementById('roomId').value;
-            // let userId = localStorage.getItem('userId');
-            // if (!userId) {
-            //     userId = Math.random().toString(36).substr(2, 9);
-            //     localStorage.setItem('userId', userId);
-            // }
-            window.location.href = `/room/join?roomId=${roomId}&name=${name}&isHost=${isHost}`;
+
+            fetch('/room/join', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ roomId, name, isHost })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        alert(data.msg);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('ネットワークエラーが発生しました。');
+                });
         }
     </script>
 </body>
