@@ -9,14 +9,16 @@
     <script>
         let socket;
         document.addEventListener('DOMContentLoaded', () => {
-            socket = io('/room'); // Ensure this connects to the correct server URL
+            socket = io('/room', { forceNew: true }); // Ensure this connects to the correct server URL
             const roomId = new URLSearchParams(window.location.search).get('id');
             socket.emit('joinRoom', roomId);
 
-            socket.on('updateParticipants', (participants) => {
+            socket.on('updateParticipants', (data) => {
                 // Update the HTML with the new participants list
                 const participantsList = document.getElementById('participants-list');
                 participantsList.innerHTML = '';
+                const participants = JSON.parse(data);
+                console.log(participants);
                 participants.forEach(participant => {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${participant.name} (${participant.isHost})`;

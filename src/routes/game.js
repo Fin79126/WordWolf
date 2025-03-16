@@ -36,7 +36,6 @@ module.exports = (io , sessionMiddleware) => {
             console.log('User joined game:', roomId);
             socket.join(roomId);
             const userId = socket.request.session.userId; // セッションからuserIdを取得
-            console.log(`User ${userId} joined room.`);
             if (userId) {
             socket.join(userId);  // ユーザーIDを部屋名として使用
             console.log(`User ${userId} joined room.`);
@@ -51,7 +50,27 @@ module.exports = (io , sessionMiddleware) => {
                     console.error("Error reading HTML file:", err);
                     return;
                 }
-                gameIo.to(roomId).emit("htmlMessage", data);
+                const room = rooms.find(r => r.roomId === roomId);
+                const userInRoom = users.filter(user => room.userIds.includes(user.userId));
+                const userInRoomX = userInRoom.map(user => {
+                    return {id: user.userId, name: user.name};
+                });
+                gameIo.to(roomId).emit("voteDisplay", JSON.stringify(userInRoomX));
+            });
+        });
+
+        socket.on('vote', (userId) => {
+            users.find(u => u.userId === userId).votes = true;
+            const allVoted = users.every(u => u.votes);
+            if (allVoted) {
+                
+            }
+            fs.readFile(path.join(__dirname, '../../public/standby.html'), "utf8", (err, data) => {
+                if (err) {
+                    console.error("Error reading HTML file:", err);
+                    return;
+                }
+                gameIo.emit("htmlMessage", data);
             });
         });
     });

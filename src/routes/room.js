@@ -14,7 +14,6 @@ module.exports = (io , sessionMiddleware) => {
   
     router.post('/join', (req, res) => {
         const { roomId, name, isHost } = req.body;
-        const role = 'human';
         // Check if roomId is already taken for Host
         if (isHost && rooms.some(r => r.roomId === roomId)) {
             res.status(400).send({msg: 'Room IDはすでに使用されています'});
@@ -33,14 +32,13 @@ module.exports = (io , sessionMiddleware) => {
             req.session.userId = Math.random().toString(36).slice(-8);
             const userId = req.session.userId;
 
-            users.push({ userId, name, isHost , role});
+            users.push({ userId, name, isHost , role:'human' , isVoted:false});
         } else {
             const userId = req.session.userId;
             const user = users.find(u => u.userId === userId);
             if (user) {
                 user.isHost = isHost;
                 user.name = name;
-                user.role = role;
             } else {
                 res.status(404).send({msg: 'ユーザーエラー'});
                 return;
@@ -103,7 +101,8 @@ module.exports = (io , sessionMiddleware) => {
             console.log('User joined game:', roomId);
             socket.join(roomId);
             // Notify all participants in the room
-            roomIo.to(roomId).emit('updateParticipants', users.filter(u => u.roomId === roomId));
+            const Inuser = users.filter(u => rooms.find(r => r.roomId === roomId).userIds.includes(u.userId));
+            roomIo.to(roomId).emit('updateParticipants', JSON.stringify(Inuser));
         });
 
         socket.on('startGame', (roomId) => {
