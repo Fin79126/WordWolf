@@ -2,34 +2,27 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
+const {users , rooms} = require('../shared/users'); // Import users array
 
-let users = []; // Server-side storage for user data
 
-router.use(cookieParser());  // クッキーの解析
-router.use(express.json()); // JSONパース用ミドルウェア
-
-router.use(session({
-    secret: 'your_secret_key',
-    resave: false,
-    saveUninitialized: true
-}));
-
-module.exports = (io) => {
+module.exports = (io , sessionMiddleware) => {
     // "/chat" 名前空間を作成
     const roomIo = io.of("/room");
+    roomIo.use((socket, next) => {
+        sessionMiddleware(socket.request, {}, next);
+    });
   
     router.post('/join', (req, res) => {
         const { roomId, name, isHost } = req.body;
+        const role = 'human';
         // Check if roomId is already taken for Host
-        if (isHost && users.some(u => u.roomId === roomId && u.isHost === isHost)) {
+        if (isHost && rooms.some(r => r.roomId === roomId)) {
             res.status(400).send({msg: 'Room IDはすでに使用されています'});
             return;
         }
 
         // Check if roomId exists for Participant
-        if (!isHost && !users.some(u => u.roomId === roomId && u.isHost === isHost)) {
+        if (!isHost && !rooms.some(r => r.roomId === roomId)) {
             res.status(400).send({msg: 'Room IDが見つかりません'});
             return;
         }
@@ -39,14 +32,15 @@ module.exports = (io) => {
             // Save user data to server-side storage
             req.session.userId = Math.random().toString(36).slice(-8);
             const userId = req.session.userId;
-            users.push({ userId, name, roomId, isHost });
+
+            users.push({ userId, name, isHost , role});
         } else {
             const userId = req.session.userId;
             const user = users.find(u => u.userId === userId);
             if (user) {
-                user.roomId = roomId;
                 user.isHost = isHost;
                 user.name = name;
+                user.role = role;
             } else {
                 res.status(404).send({msg: 'ユーザーエラー'});
                 return;
@@ -60,6 +54,16 @@ module.exports = (io) => {
         const roomId= req.query.id;
         const userId = req.session.userId;
         const user = users.find(u => u.userId === userId);
+        const room = rooms.find(r => r.roomId === roomId);
+
+        if (room) {
+            if (!room.userIds.includes(userId)) {
+                room.userIds.push(userId);
+            }
+        } else {
+            rooms.push({ roomId , userIds: [userId] });
+        }
+
 
         if (!user) {
             res.status(404).send('User not found');
@@ -91,65 +95,31 @@ module.exports = (io) => {
             res.send(modifiedHtml);
         });
     });
- 
-    router.get('/game', (req, res) => {
-        const roomId= req.query.id;
-        fs.readFile(path.join(__dirname, '../../public/game.html'), 'utf8', (err, data) => {
-            if (err) {
-                res.status(500).send('Error reading file');
-                return;
-            }
-
-            let modifiedHtml = data.replace('</body>', `
-                <script>
-                const toVote = () => {
-                    socket.emit('startVote', '${roomId}');
-                };
-                </script>
-            </body>`);
-
-            res.send(modifiedHtml);
-        });
-    });
 
     roomIo.on("connection", (socket) => {
         // console.log("User connected to /room namespace");
 
         socket.on("joinRoom", (roomId) => {
-            console.log('User joined room:', roomId);
+            console.log('User joined game:', roomId);
             socket.join(roomId);
-            const userId = socket.request.session.userId; // セッションからuserIdを取得
-            if (userId) {
-            socket.join(userId);  // ユーザーIDを部屋名として使用
-            console.log(`User ${userId} joined room.`);
-            } else {
-            console.log('No userId in session');
-            }
             // Notify all participants in the room
             roomIo.to(roomId).emit('updateParticipants', users.filter(u => u.roomId === roomId));
         });
 
         socket.on('startGame', (roomId) => {
             if (roomId) {
-                const participants = users.filter(u => u.roomId === roomId);
+                const room = rooms.find(r => r.roomId === roomId);
+                const participants = room.userIds;
+                console.log('Participants:', participants);
+                console.log('Room:', room);
                 if (participants.length > 0) {
                     const randomIndex = Math.floor(Math.random() * participants.length);
                     participants.forEach((participant, index) => {
                         participant.role = index === randomIndex ? 'wolf' : 'human';
                     });
                 }
-                roomIo.to(roomId).emit('redirectToGame', `/room/game?id=${roomId}`);
+                roomIo.to(roomId).emit('redirectToGame', `/game?id=${roomId}`);
             }
-        });
-
-        socket.on('startVote', (roomId) => {
-            fs.readFile(path.join(__dirname, '../../public/vote.html'), "utf8", (err, data) => {
-                if (err) {
-                    console.error("Error reading HTML file:", err);
-                    return;
-                }
-                roomIo.to(roomId).emit("htmlMessage", data);
-            });
         });
     });
 

@@ -12,10 +12,10 @@
     <h1>Game Page</h1>
     <div id="htmlContainer">Time left: 5 seconds</div>
     <script>
-        const socket = io('/room');
+        const socket = io('/game');
         const roomId = new URLSearchParams(window.location.search).get('id');
         console.log(roomId);
-        socket.emit('joinRoom', roomId);
+        socket.emit('joinGame', roomId);
         let timer = 5; // 60 seconds timer
         const timerElement = document.getElementById("htmlContainer");
 
