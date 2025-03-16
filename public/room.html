@@ -19,10 +19,9 @@
                 participantsList.innerHTML = '';
                 participants.forEach(participant => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = `${participant.name} (${participant.role})`;
+                    listItem.textContent = `${participant.name} (${participant.isHost})`;
                     participantsList.appendChild(listItem);
                 });
-                console.log('Rooms:', socket.rooms);
             });
 
             socket.on('redirectToGame', (url) => {
@@ -36,7 +35,7 @@
 <body>
     <h1 id="roomId">Room ID: </h1>
     <p id="userName">Name: </p>
-    <p id="userRole">Role: </p>
+    <p id="userisHost">Host: </p>
     <ul id="participants-list">
         <!-- Participants will be listed here -->
     </ul>

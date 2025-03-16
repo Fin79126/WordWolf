@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <h1>Game Page</h1>
+    <div id="htmlContainer">Time left: 5 seconds</div>
+    <script>
+        const socket = io('/room');
+        const roomId = new URLSearchParams(window.location.search).get('id');
+        console.log(roomId);
+        socket.emit('joinRoom', roomId);
+        let timer = 5; // 60 seconds timer
+        const timerElement = document.getElementById("htmlContainer");
+
+        const countdown = setInterval(() => {
+            timer--;
+            timerElement.innerText = 'Time left: ' + timer + ' seconds';
+            if (timer <= 0) {
+                clearInterval(countdown);
+                alert('Time is up!');
+                toVote?.();
+            }
+        }, 1000);
+
+        socket.on("htmlMessage", (data) => {
+            document.getElementById("htmlContainer").innerHTML = data;
+        });
+    </script>
+</body>
+
+</html>
