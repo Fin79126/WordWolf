@@ -9,7 +9,7 @@ const io = new Server(http);
 const sessionMiddleware = session({
     secret: 'your_secret_key',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 })
 
 const roomRouter = require('./routes/room')(io, sessionMiddleware);

@@ -65,8 +65,8 @@
             });
         });
 
-        socket.on("reversal", () => {
-            window.location.href = '/game/result?id=' + roomId;
+        socket.on("reversal", (roomId) => {
+            console.log('reversal');
             const button1 = document.createElement('button');
             button1.innerText = '正しい';
             button1.onclick = () => {

@@ -6,10 +6,10 @@ const {users , rooms} = require('../shared/users'); // Import users array
 const room = require('./room');
 
 
-function roomUsers(roomId) {
-    const room = rooms.find(r => r.roomId === roomId);
-    return users.filter(user => room.userIds.includes(user.userId));
-}
+// function roomUsers(roomId) {
+//     const room = rooms.find(r => r.roomId === roomId);
+//     return users.filter(user => room.userIds.includes(user.userId));
+// }
 
 
 module.exports = (io , sessionMiddleware) => {
@@ -129,9 +129,9 @@ module.exports = (io , sessionMiddleware) => {
                             console.error("Error reading HTML file:", err);
                             return;
                         }
+                        const Host = users.find(u => u.isHost).userId;
+                        gameIo.to(Host).emit("reversal", roomId);
                         gameIo.to(roomId).emit("htmlMessage", data);
-                        const Host = users.find(u => u.userId === roomUsers.hostId);
-                        gameIo.to(Host.userId).emit("reversal");
                     });
                 }
                 else {

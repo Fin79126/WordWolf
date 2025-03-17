@@ -4,28 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二つのボタン</title>
+    <title>ワードウルフ</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .form-container {
+            background: none;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+            flex-direction: column;
+        }
+
+        #backButton {
+            position: static;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 
 <body>
-    <button type="button" onclick="showForm(false)">参加者として参加</button>
-    <button type="button" onclick="showForm(true)">ホストとして参加</button>
+    <header class="header-bar" onclick="window.location.href='/'">
+        WordWolf
+    </header>
+    <div class="button-container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <button type="button" class="action-button" onclick="showForm(false)">参加者として参加</button>
+        <button type="button" class="action-button" onclick="showForm(true)">ホストとして参加</button>
+    </div>
 
-    <div id="formContainer" style="display:none;">
-        <form id="userForm">
+    <div id="formContainer" class="form-container">
+        <form id="userForm" class="user-form">
             <label for="name">名前:</label>
             <input type="text" id="name" name="name" required>
             <br>
             <label for="id">部屋のID:</label>
             <input type="text" id="roomId" name="roomId" required>
             <br>
-            <button type="button" id="submitButton" onclick="submitForm()">決定</button>
+            <button type="button" id="submitButton" class="submit-button" onclick="submitForm()">決定</button>
         </form>
+        <button type="button" id="backButton" class="action-button" style="display:none;" onclick="goBack()">戻る</button>
     </div>
 
     <script>
         function showForm(isHost) {
-            document.getElementById('formContainer').style.display = 'block';
+            document.querySelector('.button-container').style.display = 'none';
+            document.getElementById('formContainer').style.display = 'flex';
+            document.getElementById('backButton').style.display = 'block';
             const submitButton = document.getElementById('submitButton');
             if (isHost) {
                 submitButton.innerText = 'ホストとして決定';
@@ -34,6 +61,12 @@
                 submitButton.innerText = '参加者として決定';
                 submitButton.setAttribute('onclick', 'submitForm(false)');
             }
+        }
+
+        function goBack() {
+            document.querySelector('.button-container').style.display = 'flex';
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
         }
 
         function submitForm(isHost) {
