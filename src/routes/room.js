@@ -32,13 +32,15 @@ module.exports = (io , sessionMiddleware) => {
             req.session.userId = Math.random().toString(36).slice(-8);
             const userId = req.session.userId;
 
-            users.push({ userId, name, isHost , role:'human' , isVoted:false});
+            users.push({ userId, name, isHost , role:'human' , countVoted:0});
         } else {
             const userId = req.session.userId;
             const user = users.find(u => u.userId === userId);
             if (user) {
                 user.isHost = isHost;
                 user.name = name;
+                user.role = 'human';
+                user.countVoted = 0;
             } else {
                 res.status(404).send({msg: 'ユーザーエラー'});
                 return;
@@ -59,7 +61,7 @@ module.exports = (io , sessionMiddleware) => {
                 room.userIds.push(userId);
             }
         } else {
-            rooms.push({ roomId , userIds: [userId] });
+            rooms.push({ roomId , userIds: [userId] , winSide: '', setting : {}});
         }
 
 

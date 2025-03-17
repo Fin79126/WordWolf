@@ -37,15 +37,20 @@
             document.getElementById("htmlContainer").innerText = "";
             console.log(data);
             const users = JSON.parse(data);
+            console.log(users);
             users.forEach((user) => {
                 const button = document.createElement('button');
                 button.innerText = user.name;
                 button.onclick = () => {
-                    socket.emit('vote', user.id);
+                    socket.emit('vote', user.id, roomId);
                     document.querySelectorAll('button').forEach(btn => document.body.removeChild(btn)); // remove all buttons
                 };
                 document.body.appendChild(button);
             });
+        });
+
+        socket.on('redirectToResult', () => {
+            window.location.href = '/game/result?id=' + roomId;
         });
     </script>
 </body>
