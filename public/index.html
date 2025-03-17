@@ -7,18 +7,6 @@
     <title>ワードウルフ</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .form-container {
-            background: none;
-            border: none;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            position: relative;
-            flex-direction: column;
-        }
-
         #backButton {
             position: static;
             margin-top: 30px;
@@ -37,15 +25,16 @@
 
     <div id="formContainer" class="form-container">
         <form id="userForm" class="user-form">
-            <label for="name">名前:</label>
+            <label for="name">名前</label>
             <input type="text" id="name" name="name" required>
             <br>
-            <label for="id">部屋のID:</label>
+            <label for="id">部屋のID</label>
             <input type="text" id="roomId" name="roomId" required>
             <br>
-            <button type="button" id="submitButton" class="submit-button" onclick="submitForm()">決定</button>
+            <button type="button" id="submitButton" class="submit-button" style="display:flex;"
+                onclick="submitForm()">決定</button>
         </form>
-        <button type="button" id="backButton" class="action-button" style="display:none;" onclick="goBack()">戻る</button>
+        <button type="button" id="backButton" class="action-button" style="display:flex;" onclick="goBack()">戻る</button>
     </div>
 
     <script>
@@ -55,10 +44,10 @@
             document.getElementById('backButton').style.display = 'block';
             const submitButton = document.getElementById('submitButton');
             if (isHost) {
-                submitButton.innerText = 'ホストとして決定';
+                submitButton.innerText = 'ホストとして参加';
                 submitButton.setAttribute('onclick', 'submitForm(true)');
             } else {
-                submitButton.innerText = '参加者として決定';
+                submitButton.innerText = 'ゲームに参加';
                 submitButton.setAttribute('onclick', 'submitForm(false)');
             }
         }

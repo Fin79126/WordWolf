@@ -1,16 +1,14 @@
 body {
     font-family: Arial, sans-serif;
     background-color: beige;
-    margin: 0;
+    margin: 20px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 50px;
-    /* Adjust this value based on the height of the header */
+    padding-top: 0px;
     justify-content: center;
     overflow: hidden;
-    /* Add this line */
 }
 
 .header-bar {
@@ -54,6 +52,7 @@ body {
     margin: 15px 0;
     cursor: pointer;
     border-radius: 5px;
+    font-weight: bold;
     font-size: 16px;
 }
 
@@ -64,13 +63,30 @@ body {
 .form-container {
     background-color: white;
     padding: 20px;
+    text-align: center;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: none;
+    border: none;
+    box-shadow: none;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+    flex-direction: column;
+}
+
+.user-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .user-form label {
     display: block;
     margin-bottom: 5px;
+    text-align: center;
     font-weight: bold;
 }
 
@@ -81,6 +97,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
 
 .submit-button {
     background-color: #28a745;
