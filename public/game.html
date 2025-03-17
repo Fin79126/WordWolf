@@ -1,26 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-    <header>
-        <div class="home-icon" onclick="goHome()"></div>
-
-        <style>
-            .home-icon {
-                width: 40px;
-                height: 40px;
-                background-image: url('home-icon.png');
-                background-size: cover;
-                cursor: pointer;
-            }
-        </style>
+    <header class="header-bar">
+        <span onclick="window.location.href='/'" class="header-word">WordWolf</span>
     </header>
     <h1>Game Page</h1>
     <div id="htmlContainer">Time left: 5 seconds</div>

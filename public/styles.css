@@ -27,6 +27,11 @@ body {
     z-index: 1000;
 }
 
+.header-word {
+    color: white;
+    cursor: pointer;
+}
+
 .button-container {
     display: flex;
     flex-direction: column;
