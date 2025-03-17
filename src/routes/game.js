@@ -66,14 +66,13 @@ module.exports = (io , sessionMiddleware) => {
 
     gameIo.on("connection", (socket) => {
         socket.on("joinGame", (roomId) => {
-            console.log('User joined game:', roomId);
             socket.join(roomId);
             const userId = socket.request.session.userId; // セッションからuserIdを取得
             if (userId) {
-            socket.join(userId);  // ユーザーIDを部屋名として使用
-            console.log(`User ${userId} joined room.`);
+                socket.join(userId);  // ユーザーIDを部屋名として使用
+                console.log(userId , ' joined room:', roomId);
             } else {
-            console.log('No userId in session');
+                console.log('No userId in session');
             }
         });
 
@@ -92,6 +91,18 @@ module.exports = (io , sessionMiddleware) => {
             });
         });
 
+        socket.on('reversalVote', (correct,roomId) => {
+            if (correct) {
+                const room = rooms.find(r => r.roomId === roomId);
+                room.winSide = 'wolf';
+                gameIo.to(roomId).emit("redirectToResult");
+            }
+            else {
+                const room = rooms.find(r => r.roomId === roomId);
+                room.winSide = 'villager';
+                gameIo.to(roomId).emit("redirectToResult");
+            }
+        });
         socket.on('vote', (voteUserId,roomId) => {
             console.log('voteUserId:', voteUserId);
             users.find(u => u.userId === voteUserId).countVoted++;
@@ -118,8 +129,10 @@ module.exports = (io , sessionMiddleware) => {
                             console.error("Error reading HTML file:", err);
                             return;
                         }
+                        gameIo.to(roomId).emit("htmlMessage", data);
+                        const Host = users.find(u => u.userId === roomUsers.hostId);
+                        gameIo.to(Host.userId).emit("reversal");
                     });
-                    gameIo.to(roomId).emit("htmlMessage", data);
                 }
                 else {
                     const room = rooms.find(r => r.roomId === roomId);

@@ -9,9 +9,25 @@
 </head>
 
 <body>
+    <header>
+        <div class="home-icon" onclick="goHome()"></div>
+
+        <style>
+            .home-icon {
+                width: 40px;
+                height: 40px;
+                background-image: url('home-icon.png');
+                background-size: cover;
+                cursor: pointer;
+            }
+        </style>
+    </header>
     <h1>Game Page</h1>
     <div id="htmlContainer">Time left: 5 seconds</div>
     <script>
+        function goHome() {
+            window.location.href = '/';
+        }
         const socket = io('/game', { forceNew: true });
         const roomId = new URLSearchParams(window.location.search).get('id');
         console.log(roomId);
@@ -47,6 +63,22 @@
                 };
                 document.body.appendChild(button);
             });
+        });
+
+        socket.on("reversal", () => {
+            window.location.href = '/game/result?id=' + roomId;
+            const button1 = document.createElement('button');
+            button1.innerText = '正しい';
+            button1.onclick = () => {
+                socket.emit('reversalVote', true, roomId);
+            };
+            document.body.appendChild(button1);
+            const button2 = document.createElement('button');
+            button2.innerText = '間違っている';
+            button2.onclick = () => {
+                socket.emit('reversalVote', false, roomId);
+            };
+            document.body.appendChild(button2);
         });
 
         socket.on('redirectToResult', () => {

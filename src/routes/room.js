@@ -91,6 +91,8 @@ module.exports = (io , sessionMiddleware) => {
                     </script>
                 </body>`);
             }
+            console.log(users);
+            console.log(rooms);
 
             res.send(modifiedHtml);
         });
@@ -100,7 +102,6 @@ module.exports = (io , sessionMiddleware) => {
         // console.log("User connected to /room namespace");
 
         socket.on("joinRoom", (roomId) => {
-            console.log('User joined game:', roomId);
             socket.join(roomId);
             // Notify all participants in the room
             const Inuser = users.filter(u => rooms.find(r => r.roomId === roomId).userIds.includes(u.userId));
@@ -110,14 +111,15 @@ module.exports = (io , sessionMiddleware) => {
         socket.on('startGame', (roomId) => {
             if (roomId) {
                 const room = rooms.find(r => r.roomId === roomId);
-                const participants = room.userIds;
-                console.log('Participants:', participants);
+                const participants = users.filter(u => room.userIds.includes(u.userId));
                 console.log('Room:', room);
                 if (participants.length > 0) {
                     const randomIndex = Math.floor(Math.random() * participants.length);
+                    console.log('Random index:', randomIndex);
                     participants.forEach((participant, index) => {
                         participant.role = index === randomIndex ? 'wolf' : 'human';
                     });
+                    console.log('Participants:', participants);
                 }
                 roomIo.to(roomId).emit('redirectToGame', `/game?id=${roomId}`);
             }
