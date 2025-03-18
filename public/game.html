@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <title>ワードウルフ</title>
     <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -13,8 +13,10 @@
     <header class="header-bar">
         <span onclick="window.location.href='/'" class="header-word">WordWolf</span>
     </header>
-    <h1>Game Page</h1>
-    <div id="htmlContainer">Time left: 5 seconds</div>
+    <div id="htmlContainer" class="timer-container">
+        残り<span id="timerContainer" class="timer-countdown">60</span>時間
+    </div>
+    <div id="buttonContainer" class="button-container"></div>
     <script>
         function goHome() {
             window.location.href = '/';
@@ -24,11 +26,11 @@
         console.log(roomId);
         socket.emit('joinGame', roomId);
         let timer = 2; // 60 seconds timer
-        const timerElement = document.getElementById("htmlContainer");
-
+        const freeElement = document.getElementById("htmlContainer");
+        const timerContainer = document.getElementById("timerContainer");
         const countdown = setInterval(() => {
             timer--;
-            timerElement.innerText = 'Time left: ' + timer + ' seconds';
+            timerContainer.innerText = timer;
             if (timer <= 0) {
                 clearInterval(countdown);
                 alert('Time is up!');
@@ -37,39 +39,57 @@
         }, 1000);
 
         socket.on("htmlMessage", (data) => {
-            document.getElementById("htmlContainer").innerHTML = data;
+            freeElement.innerHTML = data;
         });
 
         socket.on("voteDisplay", (data) => {
-            document.getElementById("htmlContainer").innerText = "";
+            freeElement.innerText = "投票時間";
+            freeElement.className = "vote-container";
             console.log(data);
             const users = JSON.parse(data);
             console.log(users);
+            const buttonContainer = document.getElementById("buttonContainer");
+            buttonContainer.innerHTML = ''; // Clear previous buttons
+            buttonContainer.className = "participants-list";
             users.forEach((user) => {
+                const buttonDiv = document.createElement('div');
+                buttonDiv.classList.add('participant-item');
+                const nameSpan = document.createElement('span');
+                nameSpan.classList.add('participant-name');
+                nameSpan.textContent = user.name;
                 const button = document.createElement('button');
-                button.innerText = user.name;
+                button.className = 'vote-button';
+                button.innerText = "投票";
                 button.onclick = () => {
                     socket.emit('vote', user.id, roomId);
-                    document.querySelectorAll('button').forEach(btn => document.body.removeChild(btn)); // remove all buttons
+                    buttonContainer.innerHTML = ''; // remove all buttons
+                    buttonContainer.className = '';
                 };
-                document.body.appendChild(button);
+                buttonDiv.appendChild(nameSpan);
+                buttonDiv.appendChild(button);
+                buttonContainer.appendChild(buttonDiv);
             });
         });
 
         socket.on("reversal", (roomId) => {
             console.log('reversal');
+            const buttonContainer = document.getElementById("buttonContainer");
+            buttonContainer.innerHTML = ''; // Clear previous buttons
+            buttonContainer.className = "participant-item";
             const button1 = document.createElement('button');
+            button1.className = 'action-button';
             button1.innerText = '正しい';
             button1.onclick = () => {
                 socket.emit('reversalVote', true, roomId);
             };
-            document.body.appendChild(button1);
+            buttonContainer.appendChild(button1);
             const button2 = document.createElement('button');
+            button2.className = 'action-button';
             button2.innerText = '間違っている';
             button2.onclick = () => {
                 socket.emit('reversalVote', false, roomId);
             };
-            document.body.appendChild(button2);
+            buttonContainer.appendChild(button2);
         });
 
         socket.on('redirectToResult', () => {

@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: beige;
-    margin: 20px;
+    margin: 40px;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -35,6 +35,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .button-wrapper {
@@ -49,7 +50,7 @@ body {
     color: black;
     border: 2px solid #ccc;
     padding: 10px 20px;
-    margin: 15px 0;
+    margin: 15px;
     cursor: pointer;
     border-radius: 5px;
     font-weight: bold;
@@ -98,7 +99,6 @@ body {
     border-radius: 5px;
 }
 
-
 .submit-button {
     background-color: #28a745;
     color: black;
@@ -112,4 +112,123 @@ body {
 
 .submit-button:hover {
     background-color: #218838;
+}
+
+/* New styles for icipants list */
+.participants-list {
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.participants-list h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.participant-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.participant-item:last-child {
+    border-bottom: none;
+}
+
+.participant-name {
+    font-weight: bold;
+    margin-left: 20px;
+    padding-bottom: 3px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.participant-role {
+    font-weight: bold;
+    color: #666;
+}
+
+/* New styles for start button */
+#startButton {
+    background-color: #28a745;
+    color: darkslategrey;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+#startButton:hover {
+    background-color: #218838;
+}
+
+/* New styles for timer container */
+.timer-container {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 10px;
+    color: darkslategray;
+    /* border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+.vote-button {
+    background-color: #49c284;
+    color: black;
+    border: 2px solid #ccc;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.vote-button:hover {
+    background-color: #218838;
+}
+
+/* New styles for vote container */
+.vote-container {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 10px;
+    text-align: center;
+}
+
+/* New styles for timer countdown */
+.timer-countdown {
+    font-size: 30px;
+    color: black;
+}
+
+.result-container {
+    padding: 20px;
+    text-align: center;
+    margin-top: 60px;
+}
+
+.result-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.result-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
 }

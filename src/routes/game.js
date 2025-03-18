@@ -59,7 +59,7 @@ module.exports = (io , sessionMiddleware) => {
                 res.status(500).send('Error reading file');
                 return;
             }
-            let modifiedHtml = data.replace('{{winSide}}', room.winSide);
+            let modifiedHtml = data.replace('{{winSide}}', room.winSide === 'wolf' ? '狼' : '村人');
             res.send(modifiedHtml);
         });
     });
@@ -77,18 +77,12 @@ module.exports = (io , sessionMiddleware) => {
         });
 
         socket.on('startVote', (roomId) => {
-            fs.readFile(path.join(__dirname, '../../public/vote.html'), "utf8", (err, data) => {
-                if (err) {
-                    console.error("Error reading HTML file:", err);
-                    return;
-                }
-                const room = rooms.find(r => r.roomId === roomId);
-                const userInRoom = users.filter(user => room.userIds.includes(user.userId));
-                const userInRoomX = userInRoom.map(user => {
-                    return {id: user.userId, name: user.name};
-                });
-                gameIo.to(roomId).emit("voteDisplay", JSON.stringify(userInRoomX));
+            const room = rooms.find(r => r.roomId === roomId);
+            const userInRoom = users.filter(user => room.userIds.includes(user.userId));
+            const userInRoomX = userInRoom.map(user => {
+                return {id: user.userId, name: user.name};
             });
+            gameIo.to(roomId).emit("voteDisplay", JSON.stringify(userInRoomX));
         });
 
         socket.on('reversalVote', (correct,roomId) => {

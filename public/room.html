@@ -16,14 +16,22 @@
 
             socket.on('updateParticipants', (data) => {
                 // Update the HTML with the new participants list
-                const participantsList = document.getElementById('participants-list');
-                participantsList.innerHTML = '';
-                const participants = JSON.parse(data);
+                const participantsDiv = document.getElementById('participants');
+                const participantsList = JSON.parse(data);
+                participantsDiv.innerHTML = '';
                 console.log(participants);
-                participants.forEach(participant => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${participant.name} (${participant.isHost})`;
-                    participantsList.appendChild(listItem);
+                participantsList.forEach(participant => {
+                    const participantDiv = document.createElement('div');
+                    participantDiv.classList.add('participant-item');
+                    const nameSpan = document.createElement('span');
+                    nameSpan.classList.add('participant-name');
+                    nameSpan.textContent = participant.name;
+                    const roleSpan = document.createElement('span');
+                    roleSpan.classList.add('participant-role');
+                    roleSpan.textContent = participant.isHost ? 'ホスト' : '参加者';
+                    participantDiv.appendChild(nameSpan);
+                    participantDiv.appendChild(roleSpan);
+                    participantsDiv.appendChild(participantDiv);
                 });
             });
 
@@ -39,12 +47,11 @@
     <header class="header-bar">
         <span onclick="window.location.href='/'" class="header-word">WordWolf</span>
     </header>
-    <h1 id="roomId">Room ID: </h1>
-    <p id="userName">Name: </p>
-    <p id="userisHost">Host: </p>
-    <ul id="participants-list">
-        <!-- Participants will be listed here -->
-    </ul>
+    <h1 id="roomId"></h1>
+    <div class="participants-list">
+        <h2>参加者</h2>
+        <div id="participants"></div>
+    </div>
 </body>
 
 </html>

@@ -76,9 +76,7 @@ module.exports = (io , sessionMiddleware) => {
                 return;
             }
 
-            let modifiedHtml = data.replace('Room ID: ', `Room ID: ${roomId}`)
-                                .replace('Name: ', `Name: ${user.name}`)
-                                .replace('Host: ', `Host: ${user.isHost}`);
+            let modifiedHtml = data.replace('<h1 id="roomId">', `<h1 id="roomId">部屋のID：${roomId}`)
 
             // Add start button for host
             if (user.isHost) {
@@ -91,6 +89,7 @@ module.exports = (io , sessionMiddleware) => {
                     </script>
                 </body>`);
             }
+
             console.log(users);
             console.log(rooms);
 

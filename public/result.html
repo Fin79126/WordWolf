@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Result</title>
+    <title>ワードウルフ</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
 
@@ -12,8 +12,10 @@
     <header class="header-bar">
         <span onclick="window.location.href='/'" class="header-word">WordWolf</span>
     </header>
-    <h1>Game Result</h1>
-    <p>The winning side is: {{winSide}}</p>
+    <div class="result-container">
+        <h1 class="result-title">ゲーム終了</h1>
+        <p class="result-text">勝利陣営：{{winSide}}</p>
+    </div>
 </body>
 
 </html>
