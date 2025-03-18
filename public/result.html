@@ -10,7 +10,8 @@
         function regame() {
             const roomId = new URLSearchParams(window.location.search).get('id');
             const name = new URLSearchParams(window.location.search).get('name');
-            const isHost = new URLSearchParams(window.location.search).get('isHost');
+            const ishost = new URLSearchParams(window.location.search).get('isHost');
+            const isHost = ishost === 'true' ? true : false;
 
             fetch('/room/join', {
                 method: 'POST',
@@ -40,22 +41,24 @@
     <header class="header-bar">
         <span onclick="window.location.href='/'" class="header-word">WordWolf</span>
     </header>
-    <div class="result-container">
-        <h1 class="result-title">ゲーム終了</h1>
-        <p class="result-text">勝利陣営：{{winSide}}</p>
-        <div class="topic-container">
-            <h2>村人陣営のお題</h2>
-            <p>{{villagerTopic}}</p>
+    <div class="scroll-container">
+        <div class="result-container">
+            <h1 class="result-title">ゲーム終了</h1>
+            <p class="result-text">勝利陣営：{{winSide}}</p>
+            <div class="topic-container">
+                <h2>村人陣営のお題</h2>
+                <p>{{villagerTopic}}</p>
+            </div>
+            <div class="topic-container">
+                <h2>狼陣営のお題</h2>
+                <p>{{wolfTopic}}</p>
+            </div>
+            <div class="participants-container">
+                <h2>参加者ごとの役職</h2>
+                {{participants}}
+            </div>
+            <button class="action-button" onclick=regame()>再戦</button>
         </div>
-        <div class="topic-container">
-            <h2>狼陣営のお題</h2>
-            <p>{{wolfTopic}}</p>
-        </div>
-        <div class="participants-container">
-            <h2>参加者ごとの役職</h2>
-            {{participants}}
-        </div>
-        <button class="action-button" onclick=regame()>再戦</button>
     </div>
 </body>
 

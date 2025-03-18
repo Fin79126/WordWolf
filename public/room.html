@@ -38,6 +38,16 @@
             socket.on('redirectToGame', (url) => {
                 window.location.href = url;
             });
+
+            const roomIdElement = document.getElementById('roomId');
+            roomIdElement.addEventListener('click', () => {
+                const roomId = roomIdElement.textContent;
+                navigator.clipboard.writeText(roomId).then(() => {
+                    alert('コピーされました');
+                }).catch(err => {
+                    console.error('Failed to copy room ID: ', err);
+                });
+            });
         });
 
     </script>
@@ -47,7 +57,10 @@
     <header class="header-bar">
         <span onclick="window.location.href='/'" class="header-word">WordWolf</span>
     </header>
-    <h1 id="roomId"></h1>
+    <div style="justify-content:center;display:flex;">
+        <h1>部屋ID : </h1>
+        <h1 id="roomId" style="cursor: pointer;"></h1>
+    </div>
     <div class="participants-list">
         <h2>参加者</h2>
         <div id="participants"></div>

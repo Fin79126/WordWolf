@@ -291,3 +291,32 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.scroll-container {
+    width: 100%;
+    height: calc(100vh - 50px);
+    /* Adjust height to account for header */
+    overflow-y: auto;
+    padding-top: 60px;
+    /* Adjust padding to account for header */
+}
+
+/* Custom scrollbar styles */
+.scroll-container::-webkit-scrollbar {
+    width: 12px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

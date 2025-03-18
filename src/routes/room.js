@@ -43,18 +43,13 @@ module.exports = (io , sessionMiddleware) => {
         const { name, isHost } = req.body;
         let roomId = req.body.roomId;
         const roomSome = rooms.some(r => r.roomId === roomId);
-        if (isHost) roomId = Math.random().toString(36).slice(-8);
+        // Check if roomId is already taken for Host
 
-        if (roomSome && rooms.find(r => r.roomId === roomId).roomState === 'playing') {
+        if (!isHost && roomSome && rooms.find(r => r.roomId === roomId).roomState === 'playing') {
             res.status(400).send({msg: 'ゲーム中の部屋は参加できません'});
             return;
         }
 
-        // Check if roomId is already taken for Host
-        if (isHost && roomSome) {
-            res.status(400).send({msg: 'Room IDはすでに使用されています'});
-            return;
-        }
 
         // Check if roomId exists for Participant
         if (!isHost && !roomSome) {
@@ -62,15 +57,16 @@ module.exports = (io , sessionMiddleware) => {
             return;
         }
 
+        let userId;
         // Generate a random userId
         if (!req.session.userId) {
             // Save user data to server-side storage
             req.session.userId = Math.random().toString(36).slice(-8);
-            const userId = req.session.userId;
+            userId = req.session.userId;
 
             users.push({ userId, name, isHost , role:'human' , countVoted:0});
         } else {
-            const userId = req.session.userId;
+            userId = req.session.userId;
             const user = users.find(u => u.userId === userId);
             if (user) {
                 user.isHost = isHost;
@@ -82,7 +78,16 @@ module.exports = (io , sessionMiddleware) => {
             }
         }
         
-        if (isHost) {
+        if (isHost && roomSome) {
+            rooms.forEach(r => {if (r.roomId ===roomId){
+                r.userIds = [req.session.userId];
+                r.winSide = '';
+                r.setting = {};
+                r.roomState = 'waiting';
+                r.topics = [];
+            }});
+        }else if (isHost) {
+            roomId = Math.random().toString(36).slice(-8);
             rooms.push({ roomId , userIds: [req.session.userId] , winSide: '', setting : {} , roomState: 'waiting' , topics: []});
         } else {
             const room = rooms.find(r => r.roomId === roomId);
@@ -127,15 +132,17 @@ module.exports = (io , sessionMiddleware) => {
                 return;
             }
 
-            let modifiedHtml = data.replace('<h1 id="roomId">', `<h1 id="roomId">部屋のID：${roomId}`)
+            let modifiedHtml = data.replace('<h1 id="roomId" style="cursor: pointer;">', `<h1 id="roomId" style="cursor: pointer;">${roomId}`)
 
             // Add start button for host
             if (user.isHost) {
                 modifiedHtml = modifiedHtml.replace('</body>', `
                     <button id="startButton">Start Game</button>
                     <script>
-                        document.getElementById('startButton').addEventListener('click', function() {
+                        startButton = document.getElementById('startButton')
+                        startButton.addEventListener('click', function() {
                         socket.emit('startGame', '${roomId}');
+                        startButton.disabled = true;
                         });
                     </script>
                 </body>`);

@@ -111,10 +111,10 @@ module.exports = (io , sessionMiddleware) => {
 
             res.send(modifiedHtml);
         });
-        rooms.splice(0,rooms.length,...rooms.filter(room => {
-            users.splice(0,users.length,...users.filter(u => !room.userIds.includes(u.userId)));
-            return room.roomId !== roomId
-        }));
+        // rooms.splice(0,rooms.length,...rooms.filter(room => {
+        //     users.splice(0,users.length,...users.filter(u => !room.userIds.includes(u.userId)));
+        //     return room.roomId !== roomId
+        // }));
         
     });
 
@@ -141,14 +141,20 @@ module.exports = (io , sessionMiddleware) => {
 
         socket.on('reversalVote', (correct,roomId) => {
             const room = rooms.find(r => r.roomId === roomId);
-            const Host = users.find(u => u.isHost && room.userIds.includes(u.userId));
+            const roomUsers = users.filter(user => room.userIds.includes(user.userId));
             if (correct) {
                 room.winSide = 'wolf';
-                gameIo.to(roomId).emit("redirectToResult",Host.name,Host.isHost);
+                roomUsers.forEach(user => {
+                    gameIo.to(user.userId).emit("redirectToResult",user.name,user.isHost);
+                }
+                );
             }
             else {
                 room.winSide = 'human';
-                gameIo.to(roomId).emit("redirectToResult",Host.name,Host.isHost);
+                roomUsers.forEach(user => {
+                    gameIo.to(user.userId).emit("redirectToResult",user.name,user.isHost);
+                }
+                );
             }
         });
         socket.on('vote', (votedUserId,roomId) => {
@@ -186,9 +192,10 @@ module.exports = (io , sessionMiddleware) => {
                 else {
                     const room = rooms.find(r => r.roomId === roomId);
                     room.winSide = 'wolf';
-                    const Host = roomUsers.find(u => u.isHost);
-                    gameIo.to(Host.userId).emit("redirectToResult",Host.name,Host.isHost);
-                    
+                    roomUsers.forEach(user => {
+                        gameIo.to(user.userId).emit("redirectToResult",user.name,user.isHost);
+                    }
+                    );                    
                 }
             } else {
                 fs.readFile(path.join(__dirname, '../../public/standby.html'), "utf8", (err, data) => {
