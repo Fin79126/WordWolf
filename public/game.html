@@ -77,6 +77,8 @@
 
         socket.on("reversal", (roomId) => {
             console.log('reversal');
+            document.getElementById("topicContainer").style.display = 'none';
+            document.getElementById("reversalContainer").style.display = 'block';
             const buttonContainer = document.getElementById("buttonContainer");
             buttonContainer.innerHTML = ''; // Clear previous buttons
             buttonContainer.className = "participant-item";
@@ -96,8 +98,8 @@
             buttonContainer.appendChild(button2);
         });
 
-        socket.on('redirectToResult', () => {
-            window.location.href = '/game/result?id=' + roomId;
+        socket.on('redirectToResult', (name, isHost) => {
+            window.location.href = '/game/result?id=' + roomId + '&name=' + name + '&isHost=' + isHost;
         });
     </script>
 </body>

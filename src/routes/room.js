@@ -81,6 +81,13 @@ module.exports = (io , sessionMiddleware) => {
                 users.push({ userId, name, isHost , role:'human' , countVoted:0});
             }
         }
+        
+        if (isHost) {
+            rooms.push({ roomId , userIds: [req.session.userId] , winSide: '', setting : {} , roomState: 'waiting' , topics: []});
+        } else {
+            const room = rooms.find(r => r.roomId === roomId);
+            room.userIds.push(userId);
+        }
 
         res.status(200).send({ redirectUrl: `/room?id=${roomId}` });
     });
@@ -92,17 +99,25 @@ module.exports = (io , sessionMiddleware) => {
         const user = users.find(u => u.userId === userId);
         const room = rooms.find(r => r.roomId === roomId);
 
-        if (room) {
-            if (!room.userIds.includes(userId)) {
-                room.userIds.push(userId);
-            }
-        } else {
-            rooms.push({ roomId , userIds: [userId] , winSide: '', setting : {} , roomState: 'waiting' , topics: []});
+        if (!room) {
+            fs.readFile(path.join(__dirname, '../../public/room-not-found.html'), 'utf8', (err, data) => {
+                if (err) {
+                    res.status(500).send('Error reading file');
+                    return;
+                }
+                res.status(404).send(data);
+            });
+            return;
         }
 
-
         if (!user) {
-            res.status(404).send('User not found');
+            fs.readFile(path.join(__dirname, '../../public/user-not-found.html'), 'utf8', (err, data) => {
+                if (err) {
+                    res.status(500).send('Error reading file');
+                    return;
+                }
+                res.status(404).send(data);
+            });
             return;
         }
 
@@ -126,8 +141,8 @@ module.exports = (io , sessionMiddleware) => {
                 </body>`);
             }
 
-            // console.log(users);
-            // console.log(rooms);
+            console.log(users);
+            console.log(rooms);
             res.send(modifiedHtml);
         });
         

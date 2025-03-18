@@ -136,7 +136,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 10px;
-    border-bottom: 1px solid #ccc;
+    /* border-bottom: 1px solid #ccc; */
 }
 
 .participant-item:last-child {
@@ -245,4 +245,49 @@ body {
     font-size: 28px;
     color: black;
     margin-top: 10px;
+}
+
+.not-found-container {
+    padding: 20px;
+    text-align: center;
+    margin-top: 60px;
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+}
+
+.not-found-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: darkred;
+}
+
+.reversal-container {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: darkslategray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.reversal-container span {
+    font-size: 30px;
+    color: red;
+}
+
+.reversal-rule-container {
+    border: 2px solid black;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

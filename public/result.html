@@ -6,6 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ワードウルフ</title>
     <link rel="stylesheet" href="../styles.css">
+    <script>
+        function regame() {
+            const roomId = new URLSearchParams(window.location.search).get('id');
+            const name = new URLSearchParams(window.location.search).get('name');
+            const isHost = new URLSearchParams(window.location.search).get('isHost');
+
+            fetch('/room/join', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ roomId, name, isHost })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        alert(data.msg);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('ネットワークエラーが発生しました。');
+                });
+        }
+    </script>
 </head>
 
 <body>
@@ -15,6 +43,19 @@
     <div class="result-container">
         <h1 class="result-title">ゲーム終了</h1>
         <p class="result-text">勝利陣営：{{winSide}}</p>
+        <div class="topic-container">
+            <h2>村人陣営のお題</h2>
+            <p>{{villagerTopic}}</p>
+        </div>
+        <div class="topic-container">
+            <h2>狼陣営のお題</h2>
+            <p>{{wolfTopic}}</p>
+        </div>
+        <div class="participants-container">
+            <h2>参加者ごとの役職</h2>
+            {{participants}}
+        </div>
+        <button class="action-button" onclick=regame()>再戦</button>
     </div>
 </body>
 

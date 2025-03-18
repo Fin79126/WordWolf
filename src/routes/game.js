@@ -24,10 +24,33 @@ module.exports = (io , sessionMiddleware) => {
     // }
 
     router.get('/', (req, res) => {
+
         const roomId = req.query.id;
         const userId = req.session.userId;
         const room = rooms.find(r => r.roomId === roomId);
         const user = users.find(u => u.userId === userId);
+        
+        if (!room) {
+            fs.readFile(path.join(__dirname, '../../public/room-not-found.html'), 'utf8', (err, data) => {
+                if (err) {
+                    res.status(500).send('Error reading file');
+                    return;
+                }
+                res.status(404).send(data);
+            });
+            return;
+        }
+
+        if (!user) {
+            fs.readFile(path.join(__dirname, '../../public/user-not-found.html'), 'utf8', (err, data) => {
+                if (err) {
+                    res.status(500).send('Error reading file');
+                    return;
+                }
+                res.status(404).send(data);
+            });
+            return;
+        }
         fs.readFile(path.join(__dirname, '../../public/game.html'), 'utf8', (err, data) => {
             if (err) {
                 res.status(500).send('Error reading file');
@@ -58,18 +81,41 @@ module.exports = (io , sessionMiddleware) => {
     router.get('/result', (req, res) => {
         const roomId = req.query.id;
         const room = rooms.find(r => r.roomId === roomId);
+        const participants = users.filter(user => room.userIds.includes(user.userId));
         if (!room) {
-            res.status(404).send('Room not found');
+            fs.readFile(path.join(__dirname, '../../public/room-not-found.html'), 'utf8', (err, data) => {
+                if (err) {
+                    res.status(500).send('Error reading file');
+                    return;
+                }
+                res.status(404).send(data);
+            });
             return;
         }
+        
+        
         fs.readFile(path.join(__dirname, '../../public/result.html'), 'utf8', (err, data) => {
             if (err) {
                 res.status(500).send('Error reading file');
                 return;
             }
-            let modifiedHtml = data.replace('{{winSide}}', room.winSide === 'wolf' ? '狼' : '村人');
+            let modifiedHtml = data.replace('{{winSide}}', room.winSide === 'wolf' ? '狼' : '村人')
+                                   .replace('{{villagerTopic}}', room.topics[0])
+                                   .replace('{{wolfTopic}}', room.topics[1]);
+
+            const participantsHtml = room.userIds.map(userId => {
+                const user = participants.find(u => u.userId === userId);
+                return `<p>${user.name}: ${user.role === 'wolf' ? '狼' : '村人'}</p>`;
+            }).join('');
+            modifiedHtml = modifiedHtml.replace('{{participants}}', participantsHtml);
+
             res.send(modifiedHtml);
         });
+        rooms.splice(0,rooms.length,...rooms.filter(room => {
+            users.splice(0,users.length,...users.filter(u => !room.userIds.includes(u.userId)));
+            return room.roomId !== roomId
+        }));
+        
     });
 
     gameIo.on("connection", (socket) => {
@@ -94,15 +140,15 @@ module.exports = (io , sessionMiddleware) => {
         });
 
         socket.on('reversalVote', (correct,roomId) => {
+            const room = rooms.find(r => r.roomId === roomId);
+            const Host = users.find(u => u.isHost && room.userIds.includes(u.userId));
             if (correct) {
-                const room = rooms.find(r => r.roomId === roomId);
                 room.winSide = 'wolf';
-                gameIo.to(roomId).emit("redirectToResult");
+                gameIo.to(roomId).emit("redirectToResult",Host.name,Host.isHost);
             }
             else {
-                const room = rooms.find(r => r.roomId === roomId);
                 room.winSide = 'human';
-                gameIo.to(roomId).emit("redirectToResult");
+                gameIo.to(roomId).emit("redirectToResult",Host.name,Host.isHost);
             }
         });
         socket.on('vote', (votedUserId,roomId) => {
@@ -131,15 +177,18 @@ module.exports = (io , sessionMiddleware) => {
                             console.error("Error reading HTML file:", err);
                             return;
                         }
+                        const html = data.replace('{{name}}', maxVotedUser.name);
                         const Host = users.find(u => u.isHost).userId;
+                        gameIo.to(roomId).emit("htmlMessage", html);
                         gameIo.to(Host).emit("reversal", roomId);
-                        gameIo.to(roomId).emit("htmlMessage", data);
                     });
                 }
                 else {
                     const room = rooms.find(r => r.roomId === roomId);
                     room.winSide = 'wolf';
-                    gameIo.to(roomId).emit("redirectToResult");
+                    const Host = roomUsers.find(u => u.isHost);
+                    gameIo.to(Host.userId).emit("redirectToResult",Host.name,Host.isHost);
+                    
                 }
             } else {
                 fs.readFile(path.join(__dirname, '../../public/standby.html'), "utf8", (err, data) => {
