@@ -232,3 +232,17 @@ body {
     font-weight: bold;
     color: #333;
 }
+
+.topic-container {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: darkslategray;
+}
+
+.topic-container h1 {
+    font-size: 28px;
+    color: black;
+    margin-top: 10px;
+}

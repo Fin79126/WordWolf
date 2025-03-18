@@ -18,14 +18,15 @@ module.exports = (io , sessionMiddleware) => {
         sessionMiddleware(socket.request, {}, next);
     });
 
-    function roomUsers(roomId) {
-        const room = rooms.find(r => r.roomId === roomId);
-        return users.filter(user => room.userIds.includes(user.userId));
-    }
+    // function roomUsers(roomId) {
+    //     const room = rooms.find(r => r.roomId === roomId);
+    //     return users.filter(user => room.userIds.includes(user.userId));
+    // }
 
     router.get('/', (req, res) => {
         const roomId = req.query.id;
         const userId = req.session.userId;
+        const room = rooms.find(r => r.roomId === roomId);
         const user = users.find(u => u.userId === userId);
         fs.readFile(path.join(__dirname, '../../public/game.html'), 'utf8', (err, data) => {
             if (err) {
@@ -42,7 +43,14 @@ module.exports = (io , sessionMiddleware) => {
                     </script>
                 </body>`);
             }
-
+            if (user.role === 'human') {
+                modifiedHtml = modifiedHtml.replace(`<h1 id="topic">お題</h1>`, `
+                    <h1 id="topic">${room.topics[0]}</h1>`);
+            }
+            else {
+                modifiedHtml = modifiedHtml.replace(`<h1 id="topic">お題</h1>`, `
+                    <h1 id="topic">${room.topics[1]}</h1>`);
+            }
             res.send(modifiedHtml);
         });
     });
@@ -93,13 +101,13 @@ module.exports = (io , sessionMiddleware) => {
             }
             else {
                 const room = rooms.find(r => r.roomId === roomId);
-                room.winSide = 'villager';
+                room.winSide = 'human';
                 gameIo.to(roomId).emit("redirectToResult");
             }
         });
-        socket.on('vote', (voteUserId,roomId) => {
-            console.log('voteUserId:', voteUserId);
-            users.find(u => u.userId === voteUserId).countVoted++;
+        socket.on('vote', (votedUserId,roomId) => {
+            console.log('voteUserId:', votedUserId);
+            users.find(u => u.userId === votedUserId).countVoted++;
             console.log(users);
             const countVote = users.reduce((acc, user) => {
                 return acc + user.countVoted;

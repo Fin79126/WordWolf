@@ -28,7 +28,7 @@
             <label for="name">名前</label>
             <input type="text" id="name" name="name" required>
             <br>
-            <label for="id">部屋のID</label>
+            <label for="id" id="roomIdLabel">部屋のID</label>
             <input type="text" id="roomId" name="roomId" required>
             <br>
             <button type="button" id="submitButton" class="submit-button" style="display:flex;"
@@ -43,12 +43,18 @@
             document.getElementById('formContainer').style.display = 'flex';
             document.getElementById('backButton').style.display = 'block';
             const submitButton = document.getElementById('submitButton');
+            const roomIdLabel = document.getElementById('roomIdLabel');
+            const roomIdInput = document.getElementById('roomId');
             if (isHost) {
                 submitButton.innerText = 'ホストとして参加';
                 submitButton.setAttribute('onclick', 'submitForm(true)');
+                roomIdLabel.style.display = 'none';
+                roomIdInput.style.display = 'none';
             } else {
                 submitButton.innerText = 'ゲームに参加';
                 submitButton.setAttribute('onclick', 'submitForm(false)');
+                roomIdLabel.style.display = 'block';
+                roomIdInput.style.display = 'block';
             }
         }
 
@@ -60,8 +66,10 @@
 
         function submitForm(isHost) {
             const name = document.getElementById('name').value;
-            const roomId = document.getElementById('roomId').value;
-
+            let roomId = document.getElementById('roomId').value;
+            if (isHost) {
+                roomId = '';
+            }
             fetch('/room/join', {
                 method: 'POST',
                 headers: {
