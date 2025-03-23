@@ -62,6 +62,6 @@ setInterval(() => {
 }, 3600000);
 
 const port = process.env.PORT || 8080;
-http.listen(port, () => {
+http.listen(port, "0.0.0.0", () => {
 	console.log("Server is running on port 3000");
 });

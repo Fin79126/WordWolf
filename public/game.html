@@ -29,7 +29,7 @@
         const roomId = new URLSearchParams(window.location.search).get('id');
         console.log(roomId);
         socket.emit('joinGame', roomId);
-        let timer = 5; // 60 seconds timer
+        let timer = 60; // 60 seconds timer
         const freeElement = document.getElementById("htmlContainer");
         const timerContainer = document.getElementById("timerContainer");
         const countdown = setInterval(() => {
