@@ -4,7 +4,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { users, rooms } = require("../shared/users"); // Import users array
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-API_KEY = "AIzaSyBMZUK-rcZ3LTpmjEWTlpVfdbcgIwGdJSk";
+
 // Access your API key as an environment variable (see "Set up your API key" above)
 const genAI = new GoogleGenerativeAI(API_KEY);
 
