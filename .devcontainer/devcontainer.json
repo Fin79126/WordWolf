@@ -1,7 +1,10 @@
 {
     "name": "ubuntu-node-mise",
     "build": {
-        "dockerfile": "./Dockerfile"
+        "dockerfile": "./Dockerfile",
+        "args": {
+          "NO_CACHE": "--no-cache"
+        }
     },
     "init": true,
     "customizations": {

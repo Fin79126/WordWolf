@@ -9,8 +9,9 @@ mise use -g node@lts
 # cache clear
 mise cache clear
 
-npm install express-session
-npm install socket.io
-npm install express
-npm install cookie-parser
-npm install @google/generative-ai
+npm ci
+# npm install express-session
+# npm install socket.io
+# npm install express
+# npm install cookie-parser
+# npm install @google/generative-ai
