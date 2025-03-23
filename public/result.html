@@ -13,7 +13,7 @@
             const ishost = new URLSearchParams(window.location.search).get('isHost');
             const isHost = ishost === 'true' ? true : false;
 
-            fetch('/room/join', {
+            fetch('/room/rejoin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
