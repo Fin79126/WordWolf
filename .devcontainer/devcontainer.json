@@ -32,6 +32,10 @@
             ]
         }
     },
-    "runArgs": ["-v", "/var/run/docker.sock:/var/run/docker.sock"],
+    "features": {
+        "docker-from-docker": {
+        "version": "latest"
+        }
+    },
     "postCreateCommand": "/bin/bash ${containerWorkspaceFolder}/.devcontainer/setup.sh"
 }

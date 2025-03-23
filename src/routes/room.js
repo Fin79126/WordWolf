@@ -4,9 +4,10 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { users, rooms } = require("../shared/users"); // Import users array
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const api_key = process.env.API_KEY; // Access your API key as an environment variable (see "Set up your API key" above)
 
 // Access your API key as an environment variable (see "Set up your API key" above)
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = new GoogleGenerativeAI(api_key);
 
 async function gemini() {
 	// The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts

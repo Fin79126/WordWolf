@@ -9,4 +9,5 @@ mise use -g node@lts
 # cache clear
 mise cache clear
 
-npm install
+# npm ci
+# gcloud init
