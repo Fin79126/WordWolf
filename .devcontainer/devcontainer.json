@@ -1,10 +1,7 @@
 {
     "name": "ubuntu-node-mise",
     "build": {
-        "dockerfile": "./Dockerfile",
-        "args": {
-          "NO_CACHE": "--no-cache"
-        }
+        "dockerfile": "./Dockerfile"
     },
     "init": true,
     "customizations": {
@@ -30,9 +27,11 @@
             },
             "extensions": [
                 "VisualStudioExptTeam.vscodeintellicode",
-                "biomejs.biome"
+                "biomejs.biome",
+                "ms-azuretools.vscode-docker"
             ]
         }
     },
+    "runArgs": ["-v", "/var/run/docker.sock:/var/run/docker.sock"],
     "postCreateCommand": "/bin/bash ${containerWorkspaceFolder}/.devcontainer/setup.sh"
 }
