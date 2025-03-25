@@ -16,7 +16,7 @@ RUN curl https://mise.run | sh \
     && echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 # ステージ2: gcloud SDK をインストール
-FROM google/cloud-sdk:latest AS gcloud
+FROM google/cloud-sdk:slim AS gcloud
 
 # gcloudに必要な設定をする場合はここで追加
 # 例: RUN gcloud auth activate-service-account ...
